@@ -1,6 +1,6 @@
 package org.aaron.javafx.tetris;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -9,45 +9,43 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.RectangleBuilder;
 
-public class TetrisPane {
+public class TetrisPane implements TetrisModelListener {
 
-	private final ArrayList<ArrayList<Rectangle>> tetrisCoordinateToRectangle = new ArrayList<>();
+	private final TetrisModel tetrisModel;
 
 	private final Pane pane;
 
-	public TetrisPane() {
-		pane = new Pane();
+	public TetrisPane(TetrisModel tetrisModel) {
+		this.tetrisModel = tetrisModel;
 
-		for (int row = 0; row < TetrisConstants.NUM_ROWS; ++row) {
-			tetrisCoordinateToRectangle.add(new ArrayList<Rectangle>());
-			for (int column = 0; column < TetrisConstants.NUM_COLUMNS; ++column) {
-				final Rectangle rectangle = RectangleBuilder.create()
-						.fill(Color.RED).stroke(Color.BLACK).strokeWidth(1)
-						.build();
-				tetrisCoordinateToRectangle.get(row).add(rectangle);
-				pane.getChildren().add(rectangle);
-			}
-		}
+		pane = new Pane();
+		pane.setStyle("-fx-background-color: black;");
 
 		final ChangeListener<Number> paneSizeChangeListener = new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable,
 					Number oldValue, Number newValue) {
-				paneSizeChanged();
+				rebuildRectangles();
 			}
 		};
 
 		pane.widthProperty().addListener(paneSizeChangeListener);
 		pane.heightProperty().addListener(paneSizeChangeListener);
 
-		paneSizeChanged();
+		tetrisModel.registerListener(this);
+		rebuildRectangles();
 	}
 
 	public Pane getPane() {
 		return pane;
 	}
 
-	private void paneSizeChanged() {
+	private void rebuildRectangles() {
+		pane.getChildren().clear();
+
+		final Map<TetrisCoordinate, Color> drawableCells = tetrisModel
+				.getDrawableCells();
+
 		final int paneWidth = pane.widthProperty().intValue();
 		final int paneHeight = pane.heightProperty().intValue();
 		final int normalWidthPixels = (paneWidth - 1)
@@ -75,15 +73,24 @@ public class TetrisPane {
 				} else {
 					width = normalWidthPixels;
 				}
-				final Rectangle rectangle = tetrisCoordinateToRectangle
-						.get(row).get(column);
-				rectangle.setX(currentXCoordinate);
-				rectangle.setY(currentYCoordinate);
-				rectangle.setWidth(width);
-				rectangle.setHeight(rowHeight);
+				final TetrisCoordinate tetrisCoordinate = TetrisCoordinate.of(
+						row, column);
+				final Color color = drawableCells.get(tetrisCoordinate);
+				if (color != null) {
+					final Rectangle rectangle = RectangleBuilder.create()
+							.x(currentXCoordinate).y(currentYCoordinate)
+							.width(width).height(rowHeight).fill(color)
+							.stroke(Color.BLACK).strokeWidth(1).build();
+					pane.getChildren().add(rectangle);
+				}
 				currentXCoordinate += width;
 			}
 			currentYCoordinate += rowHeight;
 		}
+	}
+
+	@Override
+	public void handleTetrisModelUpdated() {
+		rebuildRectangles();
 	}
 }

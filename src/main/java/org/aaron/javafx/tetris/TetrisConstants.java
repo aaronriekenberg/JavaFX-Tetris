@@ -1,6 +1,6 @@
 package org.aaron.javafx.tetris;
 
-class TetrisConstants {
+public class TetrisConstants {
 
 	private TetrisConstants() {
 
