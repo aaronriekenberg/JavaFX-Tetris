@@ -1,13 +1,16 @@
 package org.aaron.javafx.tetris;
 
 import javafx.geometry.Pos;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class TetrisScorePane implements TetrisModelListener {
 
-	private final HBox hbox = new HBox();
+	private final VBox vbox = new VBox();
 
 	private final TetrisModel tetrisModel;
 
@@ -15,20 +18,28 @@ public class TetrisScorePane implements TetrisModelListener {
 
 	public TetrisScorePane(TetrisModel tetrisModel) {
 		this.tetrisModel = tetrisModel;
-		hbox.setAlignment(Pos.CENTER);
-		hbox.getChildren().add(text = new Text());
+
+		text = new Text();
+		text.setFill(Color.RED);
+		text.setFont(Font.font(null, FontWeight.BOLD, 20));
+
+		vbox.setStyle("-fx-background-color: black;");
+		vbox.setAlignment(Pos.CENTER);
+		vbox.getChildren().add(text);
 
 		tetrisModel.registerListener(this);
 		handleTetrisModelUpdated();
 	}
 
 	public Pane getPane() {
-		return hbox;
+		return vbox;
 	}
 
 	@Override
 	public void handleTetrisModelUpdated() {
-		if (tetrisModel.isPaused()) {
+		if (tetrisModel.isGameOver()) {
+			text.setText("Game Over Lines: " + tetrisModel.getNumLines());
+		} else if (tetrisModel.isPaused()) {
 			text.setText("Paused Lines: " + tetrisModel.getNumLines());
 		} else {
 			text.setText("Lines: " + tetrisModel.getNumLines());
