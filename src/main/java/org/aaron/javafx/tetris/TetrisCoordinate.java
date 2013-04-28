@@ -15,6 +15,18 @@ public class TetrisCoordinate {
 		return new TetrisCoordinate(row, column);
 	}
 
+	public TetrisCoordinate plusRows(int rows) {
+		return TetrisCoordinate.of(row + rows, column);
+	}
+
+	public TetrisCoordinate plusColumns(int columns) {
+		return TetrisCoordinate.of(row, column + columns);
+	}
+
+	public TetrisCoordinate plusRowsAndColumns(int rows, int columns) {
+		return TetrisCoordinate.of(row + rows, column + columns);
+	}
+
 	public int getRow() {
 		return row;
 	}

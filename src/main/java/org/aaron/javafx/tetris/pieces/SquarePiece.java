@@ -14,11 +14,9 @@ public class SquarePiece extends AbstractTetrisPiece {
 
 	public SquarePiece(TetrisCoordinate centerCoordinate, int orientation) {
 		super(centerCoordinate, Color.GREEN, orientation);
-		coordinates = ImmutableList.of(
-				TetrisCoordinate.of(getCenterRow(), getCenterColumn()),
-				TetrisCoordinate.of(getCenterRow() + 1, getCenterColumn()),
-				TetrisCoordinate.of(getCenterRow(), getCenterColumn() + 1),
-				TetrisCoordinate.of(getCenterRow() + 1, getCenterColumn() + 1));
+		coordinates = ImmutableList.of(centerCoordinate,
+				centerCoordinate.plusRows(1), centerCoordinate.plusColumns(1),
+				centerCoordinate.plusRowsAndColumns(1, 1));
 	}
 
 	public SquarePiece(TetrisCoordinate centerCoordinate) {
