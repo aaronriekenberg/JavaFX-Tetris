@@ -54,16 +54,16 @@ public class TetrisPane implements TetrisModelListener {
 		final int paneWidth = pane.widthProperty().intValue();
 		final int paneHeight = pane.heightProperty().intValue();
 		final int normalWidthPixels = (paneWidth - 1)
-				/ TetrisConstants.NUM_COLUMNS;
+				/ TetrisConstants.COLUMNS.size();
 		final int extraWidthPixels = (paneWidth - 1)
-				% TetrisConstants.NUM_COLUMNS;
+				% TetrisConstants.COLUMNS.size();
 		final int normalHeightPixels = (paneHeight - 1)
-				/ TetrisConstants.NUM_ROWS;
+				/ TetrisConstants.ROWS.size();
 		final int extraHeightPixels = (paneHeight - 1)
-				% TetrisConstants.NUM_ROWS;
+				% TetrisConstants.ROWS.size();
 
 		int currentYCoordinate = 0;
-		for (int row = 0; row < TetrisConstants.NUM_ROWS; ++row) {
+		for (int row : TetrisConstants.ROWS) {
 			final int rowHeight;
 			if (row < extraHeightPixels) {
 				rowHeight = normalHeightPixels + 1;
@@ -71,7 +71,7 @@ public class TetrisPane implements TetrisModelListener {
 				rowHeight = normalHeightPixels;
 			}
 			int currentXCoordinate = 0;
-			for (int column = 0; column < TetrisConstants.NUM_COLUMNS; ++column) {
+			for (int column : TetrisConstants.COLUMNS) {
 				final int width;
 				if (column < extraWidthPixels) {
 					width = normalWidthPixels + 1;

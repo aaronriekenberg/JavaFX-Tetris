@@ -53,7 +53,8 @@ public class TetrisModel {
 
 	public void reset() {
 		stackCells.clear();
-		for (int row = 0; row < TetrisConstants.NUM_ROWS; ++row) {
+		for (@SuppressWarnings("unused")
+		int row : TetrisConstants.ROWS) {
 			stackCells.add(buildEmptyStackCellsRowList());
 		}
 
@@ -201,8 +202,8 @@ public class TetrisModel {
 
 		if (stackCellsUpdatedStatus == StackCellsUpdatedStatus.STACK_CELLS_UPDATED) {
 			drawableStackCells.clear();
-			for (int row = 0; row < TetrisConstants.NUM_ROWS; ++row) {
-				for (int column = 0; column < TetrisConstants.NUM_COLUMNS; ++column) {
+			for (int row : TetrisConstants.ROWS) {
+				for (int column : TetrisConstants.COLUMNS) {
 					final Optional<Color> colorOption = stackCells.get(row)
 							.get(column);
 					if (colorOption.isPresent()) {
@@ -217,7 +218,7 @@ public class TetrisModel {
 
 	private void addNewPiece() {
 		final TetrisCoordinate centerCoordinate = TetrisCoordinate.of(0,
-				(TetrisConstants.NUM_COLUMNS / 2) - 1);
+				(TetrisConstants.COLUMNS.size() / 2) - 1);
 		final TetrisPiece newPiece = randomPieceFactory
 				.createRandomPiece(centerCoordinate);
 		if (isPieceLocationValid(newPiece)) {
@@ -249,7 +250,7 @@ public class TetrisModel {
 	}
 
 	private void handleFilledStackRows() {
-		int row = TetrisConstants.NUM_ROWS - 1;
+		int row = TetrisConstants.ROWS.size() - 1;
 		while (row >= 0) {
 			final boolean rowIsFull = (!stackCells.get(row).contains(
 					Optional.absent()));
@@ -302,8 +303,9 @@ public class TetrisModel {
 
 	private ArrayList<Optional<Color>> buildEmptyStackCellsRowList() {
 		final ArrayList<Optional<Color>> newRowList = new ArrayList<>(
-				TetrisConstants.NUM_COLUMNS);
-		for (int column = 0; column < TetrisConstants.NUM_COLUMNS; ++column) {
+				TetrisConstants.COLUMNS.size());
+		for (@SuppressWarnings("unused")
+		int column : TetrisConstants.COLUMNS) {
 			newRowList.add(Optional.<Color> absent());
 		}
 		return newRowList;
