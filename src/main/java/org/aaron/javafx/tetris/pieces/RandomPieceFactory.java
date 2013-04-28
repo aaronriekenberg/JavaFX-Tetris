@@ -30,6 +30,12 @@ public class RandomPieceFactory {
 				return new LinePiece(centerCoordinate);
 			}
 		});
+		pieceConstructors.add(new PieceConstructor() {
+			@Override
+			public TetrisPiece construct(TetrisCoordinate centerCoordinate) {
+				return new TPiece(centerCoordinate);
+			}
+		});
 	}
 
 	public TetrisPiece createRandomPiece(TetrisCoordinate centerCoordinate) {
