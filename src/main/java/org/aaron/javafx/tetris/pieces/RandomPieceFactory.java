@@ -36,6 +36,18 @@ public class RandomPieceFactory {
 				return new TPiece(centerCoordinate);
 			}
 		});
+		pieceConstructors.add(new PieceConstructor() {
+			@Override
+			public TetrisPiece construct(TetrisCoordinate centerCoordinate) {
+				return new LeftZPiece(centerCoordinate);
+			}
+		});
+		pieceConstructors.add(new PieceConstructor() {
+			@Override
+			public TetrisPiece construct(TetrisCoordinate centerCoordinate) {
+				return new RightZPiece(centerCoordinate);
+			}
+		});
 	}
 
 	public TetrisPiece createRandomPiece(TetrisCoordinate centerCoordinate) {
