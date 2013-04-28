@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -17,15 +18,22 @@ public class TetrisController extends Application {
 
 	private final TetrisPane tetrisPane;
 
+	private final TetrisScorePane tetrisScorePane;
+
 	public TetrisController() {
 		tetrisModel = new TetrisModel();
 		tetrisPane = new TetrisPane(tetrisModel);
+		tetrisScorePane = new TetrisScorePane(tetrisModel);
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("JavaFX Tetris");
-		primaryStage.setScene(new Scene(tetrisPane.getPane(), 300, 550));
+
+		final BorderPane rootPane = new BorderPane();
+		rootPane.setCenter(tetrisPane.getPane());
+		rootPane.setBottom(tetrisScorePane.getPane());
+		primaryStage.setScene(new Scene(rootPane, 300, 550));
 		primaryStage.show();
 
 		final Timeline timeline = new Timeline(new KeyFrame(

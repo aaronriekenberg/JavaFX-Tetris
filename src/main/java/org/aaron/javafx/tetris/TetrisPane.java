@@ -11,14 +11,13 @@ import javafx.scene.shape.RectangleBuilder;
 
 public class TetrisPane implements TetrisModelListener {
 
-	private final TetrisModel tetrisModel;
+	private final Pane pane = new Pane();
 
-	private final Pane pane;
+	private final TetrisModel tetrisModel;
 
 	public TetrisPane(TetrisModel tetrisModel) {
 		this.tetrisModel = tetrisModel;
 
-		pane = new Pane();
 		pane.setStyle("-fx-background-color: black;");
 
 		final ChangeListener<Number> paneSizeChangeListener = new ChangeListener<Number>() {

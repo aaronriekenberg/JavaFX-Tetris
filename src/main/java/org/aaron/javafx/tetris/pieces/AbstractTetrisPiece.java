@@ -1,12 +1,10 @@
 package org.aaron.javafx.tetris.pieces;
 
-import java.util.List;
-
 import javafx.scene.paint.Color;
 
 import org.aaron.javafx.tetris.TetrisCoordinate;
 
-public abstract class AbstractTetrisPiece {
+public abstract class AbstractTetrisPiece implements TetrisPiece {
 
 	private final TetrisCoordinate centerCoordinate;
 
@@ -21,48 +19,50 @@ public abstract class AbstractTetrisPiece {
 		this.orientation = orientation;
 	}
 
+	@Override
 	public TetrisCoordinate getCenterCoordinate() {
 		return centerCoordinate;
 	}
 
+	@Override
 	public int getCenterRow() {
 		return centerCoordinate.getRow();
 	}
 
+	@Override
 	public int getCenterColumn() {
 		return centerCoordinate.getColumn();
 	}
 
+	@Override
 	public Color getColor() {
 		return color;
 	}
 
-	public abstract List<TetrisCoordinate> getCoordinates();
-
+	@Override
 	public int getOrientation() {
 		return orientation;
 	}
 
-	public abstract int getNumOrientations();
-
+	@Override
 	public int getNextOrientation() {
 		return ((getOrientation() + 1) % getNumOrientations());
 	}
 
-	public abstract AbstractTetrisPiece makeTetrisPiece(
-			TetrisCoordinate centerCoordinate, int orientation);
-
-	public AbstractTetrisPiece cloneWithNewCenterCoordinate(
+	@Override
+	public TetrisPiece cloneWithNewCenterCoordinate(
 			TetrisCoordinate newCenterCoordinate) {
 		return makeTetrisPiece(newCenterCoordinate, getOrientation());
 	}
 
-	public AbstractTetrisPiece cloneWithNewCenterRow(int newCenterRow) {
+	@Override
+	public TetrisPiece cloneWithNewCenterRow(int newCenterRow) {
 		return cloneWithNewCenterCoordinate(TetrisCoordinate.of(newCenterRow,
 				getCenterColumn()));
 	}
 
-	public AbstractTetrisPiece cloneWithNewCenterColumn(int newCenterColumn) {
+	@Override
+	public TetrisPiece cloneWithNewCenterColumn(int newCenterColumn) {
 		return cloneWithNewCenterCoordinate(TetrisCoordinate.of(getCenterRow(),
 				newCenterColumn));
 	}

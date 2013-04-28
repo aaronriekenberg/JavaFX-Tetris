@@ -7,8 +7,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import javafx.scene.paint.Color;
 
-import org.aaron.javafx.tetris.pieces.AbstractTetrisPiece;
 import org.aaron.javafx.tetris.pieces.RandomPieceFactory;
+import org.aaron.javafx.tetris.pieces.TetrisPiece;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
@@ -23,8 +23,7 @@ public class TetrisModel {
 
 	private final HashMap<TetrisCoordinate, Color> drawableCells = new HashMap<>();
 
-	private Optional<AbstractTetrisPiece> currentPieceOption = Optional
-			.absent();
+	private Optional<TetrisPiece> currentPieceOption = Optional.absent();
 
 	private int numLines = 0;
 
@@ -99,8 +98,8 @@ public class TetrisModel {
 	public void moveCurrentPieceDown() {
 		if (gameRunning() && currentPieceOption.isPresent()) {
 			deferPublish();
-			final AbstractTetrisPiece currentPiece = currentPieceOption.get();
-			final AbstractTetrisPiece currentPieceMoved = currentPiece
+			final TetrisPiece currentPiece = currentPieceOption.get();
+			final TetrisPiece currentPieceMoved = currentPiece
 					.cloneWithNewCenterRow(currentPiece.getCenterRow() + 1);
 			if (isPieceLocationValid(currentPieceMoved)) {
 				currentPieceOption = Optional.of(currentPieceMoved);
@@ -127,8 +126,8 @@ public class TetrisModel {
 	public void moveCurrentPieceLeft() {
 		if (gameRunning() && currentPieceOption.isPresent()) {
 			deferPublish();
-			final AbstractTetrisPiece currentPiece = currentPieceOption.get();
-			final AbstractTetrisPiece currentPieceMoved = currentPiece
+			final TetrisPiece currentPiece = currentPieceOption.get();
+			final TetrisPiece currentPieceMoved = currentPiece
 					.cloneWithNewCenterColumn(currentPiece.getCenterColumn() - 1);
 			if (isPieceLocationValid(currentPieceMoved)) {
 				currentPieceOption = Optional.of(currentPieceMoved);
@@ -141,8 +140,8 @@ public class TetrisModel {
 	public void moveCurrentPieceRight() {
 		if (gameRunning() && currentPieceOption.isPresent()) {
 			deferPublish();
-			final AbstractTetrisPiece currentPiece = currentPieceOption.get();
-			final AbstractTetrisPiece currentPieceMoved = currentPiece
+			final TetrisPiece currentPiece = currentPieceOption.get();
+			final TetrisPiece currentPieceMoved = currentPiece
 					.cloneWithNewCenterColumn(currentPiece.getCenterColumn() + 1);
 			if (isPieceLocationValid(currentPieceMoved)) {
 				currentPieceOption = Optional.of(currentPieceMoved);
@@ -161,7 +160,7 @@ public class TetrisModel {
 		drawableCells.clear();
 
 		if (currentPieceOption.isPresent()) {
-			final AbstractTetrisPiece currentPiece = currentPieceOption.get();
+			final TetrisPiece currentPiece = currentPieceOption.get();
 			for (TetrisCoordinate tetrisCoordinate : currentPiece
 					.getCoordinates()) {
 				drawableCells.put(tetrisCoordinate, currentPiece.getColor());
@@ -183,7 +182,7 @@ public class TetrisModel {
 	private void addNewPiece() {
 		final TetrisCoordinate centerCoordinate = TetrisCoordinate.of(0,
 				(TetrisConstants.NUM_COLUMNS / 2) - 1);
-		final AbstractTetrisPiece newPiece = randomPieceFactory
+		final TetrisPiece newPiece = randomPieceFactory
 				.createRandomPiece(centerCoordinate);
 		if (isPieceLocationValid(newPiece)) {
 			currentPieceOption = Optional.of(newPiece);
@@ -193,7 +192,7 @@ public class TetrisModel {
 		}
 	}
 
-	private void addPieceToStack(AbstractTetrisPiece tetrisPiece) {
+	private void addPieceToStack(TetrisPiece tetrisPiece) {
 		for (TetrisCoordinate tetrisCoordinate : tetrisPiece.getCoordinates()) {
 			stackCells.get(tetrisCoordinate.getRow()).set(
 					tetrisCoordinate.getColumn(),
@@ -217,7 +216,7 @@ public class TetrisModel {
 		}
 	}
 
-	private boolean isPieceLocationValid(AbstractTetrisPiece tetrisPiece) {
+	private boolean isPieceLocationValid(TetrisPiece tetrisPiece) {
 		for (TetrisCoordinate tetrisCoordinate : tetrisPiece.getCoordinates()) {
 			if (!tetrisCoordinate.isValid()) {
 				return false;

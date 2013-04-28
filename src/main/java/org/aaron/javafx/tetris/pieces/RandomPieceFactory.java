@@ -8,8 +8,7 @@ public class RandomPieceFactory {
 
 	}
 
-	public AbstractTetrisPiece createRandomPiece(
-			TetrisCoordinate centerCoordinate) {
+	public TetrisPiece createRandomPiece(TetrisCoordinate centerCoordinate) {
 		return new SquarePiece(centerCoordinate);
 	}
 
