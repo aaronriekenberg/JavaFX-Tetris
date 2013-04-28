@@ -33,4 +33,6 @@ public interface TetrisPiece {
 	public TetrisPiece cloneWithNewCenterRow(int newCenterRow);
 
 	public TetrisPiece cloneWithNewCenterColumn(int newCenterColumn);
+
+	public TetrisPiece cloneWithNextOrientation();
 }

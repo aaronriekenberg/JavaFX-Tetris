@@ -67,4 +67,9 @@ public abstract class AbstractTetrisPiece implements TetrisPiece {
 				newCenterColumn));
 	}
 
+	@Override
+	public TetrisPiece cloneWithNextOrientation() {
+		return makeTetrisPiece(getCenterCoordinate(), getNextOrientation());
+	}
+
 }

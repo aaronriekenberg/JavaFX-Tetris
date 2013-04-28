@@ -72,6 +72,10 @@ public class TetrisController extends Application {
 					tetrisModel.moveCurrentPieceRight();
 					consumed = true;
 					break;
+				case UP:
+					tetrisModel.rotateCurrentPiece();
+					consumed = true;
+					break;
 				case P:
 					tetrisModel.togglePause();
 					consumed = true;

@@ -151,6 +151,20 @@ public class TetrisModel {
 		}
 	}
 
+	public void rotateCurrentPiece() {
+		if (gameRunning() && currentPieceOption.isPresent()) {
+			deferPublish();
+			final TetrisPiece currentPiece = currentPieceOption.get();
+			final TetrisPiece currentPieceMoved = currentPiece
+					.cloneWithNextOrientation();
+			if (isPieceLocationValid(currentPieceMoved)) {
+				currentPieceOption = Optional.of(currentPieceMoved);
+			}
+			resumePublish();
+			publishTetrisModelEvent();
+		}
+	}
+
 	public void togglePause() {
 		paused = !paused;
 		publishTetrisModelEvent();
