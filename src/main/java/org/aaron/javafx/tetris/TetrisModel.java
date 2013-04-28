@@ -217,10 +217,7 @@ public class TetrisModel {
 	}
 
 	private void addNewPiece() {
-		final TetrisCoordinate centerCoordinate = TetrisCoordinate.of(0,
-				(TetrisConstants.COLUMNS.size() / 2) - 1);
-		final TetrisPiece newPiece = randomPieceFactory
-				.createRandomPiece(centerCoordinate);
+		final TetrisPiece newPiece = randomPieceFactory.createRandomPiece();
 		if (isPieceLocationValid(newPiece)) {
 			setCurrentPiece(newPiece);
 		} else {
