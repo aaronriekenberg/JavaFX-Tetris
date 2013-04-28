@@ -1,5 +1,7 @@
 package org.aaron.javafx.tetris;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import javafx.beans.value.ChangeListener;
@@ -10,6 +12,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.RectangleBuilder;
 
 public class TetrisPane implements TetrisModelListener {
+
+	private final HashMap<TetrisCoordinate, TetrisPaneCellPixelCoordinates> tetrisCoordinatesToPixelCoordinate = new HashMap<>();
+
+	private final ArrayList<Rectangle> currentPieceRectangles = new ArrayList<>();
+
+	private final ArrayList<Rectangle> stackCellRectangles = new ArrayList<>();
 
 	private final Pane pane = new Pane();
 
@@ -24,7 +32,7 @@ public class TetrisPane implements TetrisModelListener {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable,
 					Number oldValue, Number newValue) {
-				rebuildRectangles();
+				updatePixelCoordinates();
 			}
 		};
 
@@ -32,18 +40,16 @@ public class TetrisPane implements TetrisModelListener {
 		pane.heightProperty().addListener(paneSizeChangeListener);
 
 		tetrisModel.registerListener(this);
-		rebuildRectangles();
+
+		updatePixelCoordinates();
 	}
 
 	public Pane getPane() {
 		return pane;
 	}
 
-	private void rebuildRectangles() {
-		pane.getChildren().clear();
-
-		final Map<TetrisCoordinate, Color> drawableCells = tetrisModel
-				.getDrawableCells();
+	private void updatePixelCoordinates() {
+		tetrisCoordinatesToPixelCoordinate.clear();
 
 		final int paneWidth = pane.widthProperty().intValue();
 		final int paneHeight = pane.heightProperty().intValue();
@@ -72,24 +78,69 @@ public class TetrisPane implements TetrisModelListener {
 				} else {
 					width = normalWidthPixels;
 				}
-				final TetrisCoordinate tetrisCoordinate = TetrisCoordinate.of(
-						row, column);
-				final Color color = drawableCells.get(tetrisCoordinate);
-				if (color != null) {
-					final Rectangle rectangle = RectangleBuilder.create()
-							.x(currentXCoordinate).y(currentYCoordinate)
-							.width(width).height(rowHeight).fill(color)
-							.stroke(Color.BLACK).strokeWidth(1).build();
-					pane.getChildren().add(rectangle);
-				}
+				tetrisCoordinatesToPixelCoordinate.put(TetrisCoordinate.of(row,
+						column), new TetrisPaneCellPixelCoordinates(
+						currentXCoordinate, currentYCoordinate, width,
+						rowHeight));
 				currentXCoordinate += width;
 			}
 			currentYCoordinate += rowHeight;
 		}
+
+		rebuildCurrentPieceRectangles();
+		rebuildStackCellRectangles();
+	}
+
+	private void rebuildCurrentPieceRectangles() {
+		pane.getChildren().removeAll(currentPieceRectangles);
+		currentPieceRectangles.clear();
+
+		for (Map.Entry<TetrisCoordinate, Color> entry : tetrisModel
+				.getDrawableCurrentPieceCells().entrySet()) {
+			final TetrisCoordinate tetrisCoordinate = entry.getKey();
+			final Color color = entry.getValue();
+			final TetrisPaneCellPixelCoordinates pixelCoordinates = tetrisCoordinatesToPixelCoordinate
+					.get(tetrisCoordinate);
+			final Rectangle rectangle = RectangleBuilder.create()
+					.x(pixelCoordinates.getX()).y(pixelCoordinates.getY())
+					.width(pixelCoordinates.getWidth())
+					.height(pixelCoordinates.getHeight()).fill(color)
+					.stroke(Color.BLACK).strokeWidth(1).build();
+			currentPieceRectangles.add(rectangle);
+			pane.getChildren().add(rectangle);
+		}
+	}
+
+	private void rebuildStackCellRectangles() {
+		pane.getChildren().removeAll(stackCellRectangles);
+		stackCellRectangles.clear();
+
+		for (Map.Entry<TetrisCoordinate, Color> entry : tetrisModel
+				.getDrawableStackCells().entrySet()) {
+			final TetrisCoordinate tetrisCoordinate = entry.getKey();
+			final Color color = entry.getValue();
+			final TetrisPaneCellPixelCoordinates pixelCoordinates = tetrisCoordinatesToPixelCoordinate
+					.get(tetrisCoordinate);
+			final Rectangle rectangle = RectangleBuilder.create()
+					.x(pixelCoordinates.getX()).y(pixelCoordinates.getY())
+					.width(pixelCoordinates.getWidth())
+					.height(pixelCoordinates.getHeight()).fill(color)
+					.stroke(Color.BLACK).strokeWidth(1).build();
+			stackCellRectangles.add(rectangle);
+			pane.getChildren().add(rectangle);
+		}
 	}
 
 	@Override
-	public void handleTetrisModelUpdated() {
-		rebuildRectangles();
+	public void handleTetrisModelUpdated(
+			CurrentPieceUpdatedStatus currentPieceUpdatedStatus,
+			StackCellsUpdatedStatus stackCellsUpdatedStatus) {
+		if (currentPieceUpdatedStatus == CurrentPieceUpdatedStatus.CURRENT_PIECE_UPDATED) {
+			rebuildCurrentPieceRectangles();
+		}
+		if (stackCellsUpdatedStatus == StackCellsUpdatedStatus.STACK_CELLS_UPDATED) {
+			rebuildStackCellRectangles();
+		}
 	}
+
 }

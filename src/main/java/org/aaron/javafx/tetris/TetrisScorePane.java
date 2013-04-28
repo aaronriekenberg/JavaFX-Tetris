@@ -28,7 +28,9 @@ public class TetrisScorePane implements TetrisModelListener {
 		vbox.getChildren().add(text);
 
 		tetrisModel.registerListener(this);
-		handleTetrisModelUpdated();
+		handleTetrisModelUpdated(
+				CurrentPieceUpdatedStatus.CURRENT_PIECE_UPDATED,
+				StackCellsUpdatedStatus.STACK_CELLS_UPDATED);
 	}
 
 	public Pane getPane() {
@@ -36,7 +38,9 @@ public class TetrisScorePane implements TetrisModelListener {
 	}
 
 	@Override
-	public void handleTetrisModelUpdated() {
+	public void handleTetrisModelUpdated(
+			CurrentPieceUpdatedStatus currentPieceUpdatedStatus,
+			StackCellsUpdatedStatus stackCellsUpdatedStatus) {
 		if (tetrisModel.isGameOver()) {
 			text.setText("Game Over Lines: " + tetrisModel.getNumLines());
 		} else if (tetrisModel.isPaused()) {

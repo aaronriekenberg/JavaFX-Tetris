@@ -21,9 +21,11 @@ public class TetrisModel {
 
 	private final ArrayList<ArrayList<Optional<Color>>> stackCells = new ArrayList<>();
 
-	private final HashMap<TetrisCoordinate, Color> drawableCells = new HashMap<>();
+	private final HashMap<TetrisCoordinate, Color> drawableStackCells = new HashMap<>();
 
 	private Optional<TetrisPiece> currentPieceOption = Optional.absent();
+
+	private final HashMap<TetrisCoordinate, Color> drawableCurrentPieceCells = new HashMap<>();
 
 	private int numLines = 0;
 
@@ -32,6 +34,10 @@ public class TetrisModel {
 	private boolean gameOver = false;
 
 	private int deferPublishCount = 0;
+
+	private CurrentPieceUpdatedStatus currentPieceUpdatedStatus = CurrentPieceUpdatedStatus.CURRENT_PIECE_UPDATED;
+
+	private StackCellsUpdatedStatus stackCellsUpdatedStatus = StackCellsUpdatedStatus.STACK_CELLS_UPDATED;
 
 	public TetrisModel() {
 		reset();
@@ -51,9 +57,11 @@ public class TetrisModel {
 			stackCells.add(buildEmptyStackCellsRowList());
 		}
 
-		drawableCells.clear();
+		drawableStackCells.clear();
 
 		currentPieceOption = Optional.absent();
+
+		drawableCurrentPieceCells.clear();
 
 		numLines = 0;
 
@@ -63,11 +71,19 @@ public class TetrisModel {
 
 		deferPublishCount = 0;
 
+		currentPieceUpdatedStatus = CurrentPieceUpdatedStatus.CURRENT_PIECE_UPDATED;
+
+		stackCellsUpdatedStatus = StackCellsUpdatedStatus.STACK_CELLS_UPDATED;
+
 		publishTetrisModelEvent();
 	}
 
-	public Map<TetrisCoordinate, Color> getDrawableCells() {
-		return ImmutableMap.copyOf(drawableCells);
+	public Map<TetrisCoordinate, Color> getDrawableCurrentPieceCells() {
+		return ImmutableMap.copyOf(drawableCurrentPieceCells);
+	}
+
+	public Map<TetrisCoordinate, Color> getDrawableStackCells() {
+		return ImmutableMap.copyOf(drawableStackCells);
 	}
 
 	public int getNumLines() {
@@ -102,10 +118,10 @@ public class TetrisModel {
 			final TetrisPiece currentPieceMoved = currentPiece
 					.cloneWithNewCenterRow(currentPiece.getCenterRow() + 1);
 			if (isPieceLocationValid(currentPieceMoved)) {
-				currentPieceOption = Optional.of(currentPieceMoved);
+				setCurrentPiece(currentPieceMoved);
 			} else {
 				addPieceToStack(currentPiece);
-				currentPieceOption = Optional.absent();
+				clearCurrentPiece();
 			}
 			resumePublish();
 			publishTetrisModelEvent();
@@ -130,7 +146,7 @@ public class TetrisModel {
 			final TetrisPiece currentPieceMoved = currentPiece
 					.cloneWithNewCenterColumn(currentPiece.getCenterColumn() - 1);
 			if (isPieceLocationValid(currentPieceMoved)) {
-				currentPieceOption = Optional.of(currentPieceMoved);
+				setCurrentPiece(currentPieceMoved);
 			}
 			resumePublish();
 			publishTetrisModelEvent();
@@ -144,7 +160,7 @@ public class TetrisModel {
 			final TetrisPiece currentPieceMoved = currentPiece
 					.cloneWithNewCenterColumn(currentPiece.getCenterColumn() + 1);
 			if (isPieceLocationValid(currentPieceMoved)) {
-				currentPieceOption = Optional.of(currentPieceMoved);
+				setCurrentPiece(currentPieceMoved);
 			}
 			resumePublish();
 			publishTetrisModelEvent();
@@ -158,7 +174,7 @@ public class TetrisModel {
 			final TetrisPiece currentPieceMoved = currentPiece
 					.cloneWithNextOrientation();
 			if (isPieceLocationValid(currentPieceMoved)) {
-				currentPieceOption = Optional.of(currentPieceMoved);
+				setCurrentPiece(currentPieceMoved);
 			}
 			resumePublish();
 			publishTetrisModelEvent();
@@ -171,23 +187,29 @@ public class TetrisModel {
 	}
 
 	private void updateDrawableCells() {
-		drawableCells.clear();
-
-		if (currentPieceOption.isPresent()) {
-			final TetrisPiece currentPiece = currentPieceOption.get();
-			for (TetrisCoordinate tetrisCoordinate : currentPiece
-					.getCoordinates()) {
-				drawableCells.put(tetrisCoordinate, currentPiece.getColor());
+		if (currentPieceUpdatedStatus == CurrentPieceUpdatedStatus.CURRENT_PIECE_UPDATED) {
+			drawableCurrentPieceCells.clear();
+			if (currentPieceOption.isPresent()) {
+				final TetrisPiece currentPiece = currentPieceOption.get();
+				for (TetrisCoordinate tetrisCoordinate : currentPiece
+						.getCoordinates()) {
+					drawableCurrentPieceCells.put(tetrisCoordinate,
+							currentPiece.getColor());
+				}
 			}
 		}
 
-		for (int row = 0; row < TetrisConstants.NUM_ROWS; ++row) {
-			for (int column = 0; column < TetrisConstants.NUM_COLUMNS; ++column) {
-				final Optional<Color> colorOption = stackCells.get(row).get(
-						column);
-				if (colorOption.isPresent()) {
-					drawableCells.put(new TetrisCoordinate(row, column),
-							colorOption.get());
+		if (stackCellsUpdatedStatus == StackCellsUpdatedStatus.STACK_CELLS_UPDATED) {
+			drawableStackCells.clear();
+			for (int row = 0; row < TetrisConstants.NUM_ROWS; ++row) {
+				for (int column = 0; column < TetrisConstants.NUM_COLUMNS; ++column) {
+					final Optional<Color> colorOption = stackCells.get(row)
+							.get(column);
+					if (colorOption.isPresent()) {
+						drawableStackCells.put(
+								TetrisCoordinate.of(row, column),
+								colorOption.get());
+					}
 				}
 			}
 		}
@@ -199,11 +221,21 @@ public class TetrisModel {
 		final TetrisPiece newPiece = randomPieceFactory
 				.createRandomPiece(centerCoordinate);
 		if (isPieceLocationValid(newPiece)) {
-			currentPieceOption = Optional.of(newPiece);
+			setCurrentPiece(newPiece);
 		} else {
-			currentPieceOption = Optional.absent();
+			clearCurrentPiece();
 			gameOver = true;
 		}
+	}
+
+	private void setCurrentPiece(TetrisPiece newCurrentPiece) {
+		currentPieceOption = Optional.of(newCurrentPiece);
+		currentPieceUpdatedStatus = CurrentPieceUpdatedStatus.CURRENT_PIECE_UPDATED;
+	}
+
+	private void clearCurrentPiece() {
+		currentPieceOption = Optional.absent();
+		currentPieceUpdatedStatus = CurrentPieceUpdatedStatus.CURRENT_PIECE_UPDATED;
 	}
 
 	private void addPieceToStack(TetrisPiece tetrisPiece) {
@@ -213,6 +245,7 @@ public class TetrisModel {
 					Optional.of(tetrisPiece.getColor()));
 		}
 		handleFilledStackRows();
+		stackCellsUpdatedStatus = StackCellsUpdatedStatus.STACK_CELLS_UPDATED;
 	}
 
 	private void handleFilledStackRows() {
@@ -259,8 +292,11 @@ public class TetrisModel {
 		if (deferPublishCount == 0) {
 			updateDrawableCells();
 			for (TetrisModelListener l : listeners) {
-				l.handleTetrisModelUpdated();
+				l.handleTetrisModelUpdated(currentPieceUpdatedStatus,
+						stackCellsUpdatedStatus);
 			}
+			currentPieceUpdatedStatus = CurrentPieceUpdatedStatus.CURRENT_PIECE_NOT_UPDATED;
+			stackCellsUpdatedStatus = StackCellsUpdatedStatus.STACK_CELLS_NOT_UPDATED;
 		}
 	}
 
