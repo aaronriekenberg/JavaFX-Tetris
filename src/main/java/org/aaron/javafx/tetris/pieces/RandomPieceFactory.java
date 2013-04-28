@@ -20,6 +20,8 @@ public class RandomPieceFactory {
 		newPieces.add(new TPiece(newPieceCenterCoordinate));
 		newPieces.add(new LeftZPiece(newPieceCenterCoordinate));
 		newPieces.add(new RightZPiece(newPieceCenterCoordinate));
+		newPieces.add(new LeftLPiece(newPieceCenterCoordinate));
+		newPieces.add(new RightLPiece(newPieceCenterCoordinate));
 	}
 
 	public TetrisPiece createRandomPiece() {
