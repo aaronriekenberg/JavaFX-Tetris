@@ -14,6 +14,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Range;
 
 public class TetrisModel {
 
@@ -217,8 +218,9 @@ public class TetrisModel {
 	}
 
 	private void handleFilledStackRows() {
-		int row = TetrisConstants.ROWS_RANGE.upperEndpoint() - 1;
-		while (row >= TetrisConstants.ROWS_RANGE.lowerEndpoint()) {
+		final Range<Integer> closedRowsRange = TetrisConstants.ROWS_SET.range();
+		int row = closedRowsRange.upperEndpoint();
+		while (row >= closedRowsRange.lowerEndpoint()) {
 			final boolean rowIsFull = (!stackCells.get(row).contains(
 					Optional.absent()));
 			if (rowIsFull) {
