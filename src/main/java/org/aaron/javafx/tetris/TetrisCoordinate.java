@@ -36,8 +36,8 @@ public class TetrisCoordinate {
 	}
 
 	public boolean isValid() {
-		return TetrisConstants.ROWS.contains(row)
-				&& TetrisConstants.COLUMNS.contains(column);
+		return TetrisConstants.ROWS_RANGE.contains(row)
+				&& TetrisConstants.COLUMNS_RANGE.contains(column);
 	}
 
 	@Override

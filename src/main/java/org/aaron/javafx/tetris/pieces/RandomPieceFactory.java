@@ -14,7 +14,7 @@ public class RandomPieceFactory {
 
 	public RandomPieceFactory() {
 		final TetrisCoordinate newPieceCenterCoordinate = TetrisCoordinate.of(
-				0, (TetrisConstants.COLUMNS.size() / 2) - 1);
+				0, (TetrisConstants.COLUMNS_SET.size() / 2) - 1);
 		newPieces.add(new SquarePiece(newPieceCenterCoordinate));
 		newPieces.add(new LinePiece(newPieceCenterCoordinate));
 		newPieces.add(new TPiece(newPieceCenterCoordinate));

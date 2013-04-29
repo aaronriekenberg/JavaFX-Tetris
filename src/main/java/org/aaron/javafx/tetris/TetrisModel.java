@@ -10,7 +10,9 @@ import javafx.scene.paint.Color;
 import org.aaron.javafx.tetris.pieces.RandomPieceFactory;
 import org.aaron.javafx.tetris.pieces.TetrisPiece;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableMap;
 
 public class TetrisModel {
@@ -53,10 +55,7 @@ public class TetrisModel {
 
 	public void reset() {
 		stackCells.clear();
-		for (@SuppressWarnings("unused")
-		int row : TetrisConstants.ROWS) {
-			stackCells.add(buildEmptyStackCellsRowList());
-		}
+		stackCells.addAll(buildEmptyStackCellsColumnsList());
 
 		drawableStackCells.clear();
 
@@ -218,8 +217,8 @@ public class TetrisModel {
 	}
 
 	private void handleFilledStackRows() {
-		int row = TetrisConstants.ROWS.size() - 1;
-		while (row >= 0) {
+		int row = TetrisConstants.ROWS_RANGE.upperEndpoint() - 1;
+		while (row >= TetrisConstants.ROWS_RANGE.lowerEndpoint()) {
 			final boolean rowIsFull = (!stackCells.get(row).contains(
 					Optional.absent()));
 			if (rowIsFull) {
@@ -272,8 +271,8 @@ public class TetrisModel {
 
 		if (stackCellsUpdatedStatus == StackCellsUpdatedStatus.STACK_CELLS_UPDATED) {
 			drawableStackCells.clear();
-			for (int row : TetrisConstants.ROWS) {
-				for (int column : TetrisConstants.COLUMNS) {
+			for (int row : TetrisConstants.ROWS_SET) {
+				for (int column : TetrisConstants.COLUMNS_SET) {
 					final Optional<Color> colorOption = stackCells.get(row)
 							.get(column);
 					if (colorOption.isPresent()) {
@@ -298,13 +297,24 @@ public class TetrisModel {
 		}
 	}
 
+	private ArrayList<ArrayList<Optional<Color>>> buildEmptyStackCellsColumnsList() {
+		return new ArrayList<>(Collections2.transform(TetrisConstants.ROWS_SET,
+				new Function<Integer, ArrayList<Optional<Color>>>() {
+					@Override
+					public ArrayList<Optional<Color>> apply(Integer row) {
+						return buildEmptyStackCellsRowList();
+					}
+				}));
+	}
+
 	private ArrayList<Optional<Color>> buildEmptyStackCellsRowList() {
-		final ArrayList<Optional<Color>> newRowList = new ArrayList<>(
-				TetrisConstants.COLUMNS.size());
-		for (@SuppressWarnings("unused")
-		int column : TetrisConstants.COLUMNS) {
-			newRowList.add(Optional.<Color> absent());
-		}
-		return newRowList;
+		return new ArrayList<>(Collections2.transform(
+				TetrisConstants.COLUMNS_SET,
+				new Function<Integer, Optional<Color>>() {
+					@Override
+					public Optional<Color> apply(Integer column) {
+						return Optional.absent();
+					}
+				}));
 	}
 }
