@@ -187,35 +187,6 @@ public class TetrisModel {
 		publishTetrisModelEvent();
 	}
 
-	private void updateDrawableCells() {
-		if (currentPieceUpdatedStatus == CurrentPieceUpdatedStatus.CURRENT_PIECE_UPDATED) {
-			drawableCurrentPieceCells.clear();
-			if (currentPieceOption.isPresent()) {
-				final TetrisPiece currentPiece = currentPieceOption.get();
-				for (TetrisCoordinate tetrisCoordinate : currentPiece
-						.getCoordinates()) {
-					drawableCurrentPieceCells.put(tetrisCoordinate,
-							currentPiece.getColor());
-				}
-			}
-		}
-
-		if (stackCellsUpdatedStatus == StackCellsUpdatedStatus.STACK_CELLS_UPDATED) {
-			drawableStackCells.clear();
-			for (int row : TetrisConstants.ROWS) {
-				for (int column : TetrisConstants.COLUMNS) {
-					final Optional<Color> colorOption = stackCells.get(row)
-							.get(column);
-					if (colorOption.isPresent()) {
-						drawableStackCells.put(
-								TetrisCoordinate.of(row, column),
-								colorOption.get());
-					}
-				}
-			}
-		}
-	}
-
 	private void addNewPiece() {
 		final TetrisPiece newPiece = randomPieceFactory.createRandomPiece();
 		if (isPieceLocationValid(newPiece)) {
@@ -284,6 +255,35 @@ public class TetrisModel {
 
 	private void resumePublish() {
 		--deferPublishCount;
+	}
+
+	private void updateDrawableCells() {
+		if (currentPieceUpdatedStatus == CurrentPieceUpdatedStatus.CURRENT_PIECE_UPDATED) {
+			drawableCurrentPieceCells.clear();
+			if (currentPieceOption.isPresent()) {
+				final TetrisPiece currentPiece = currentPieceOption.get();
+				for (TetrisCoordinate tetrisCoordinate : currentPiece
+						.getCoordinates()) {
+					drawableCurrentPieceCells.put(tetrisCoordinate,
+							currentPiece.getColor());
+				}
+			}
+		}
+
+		if (stackCellsUpdatedStatus == StackCellsUpdatedStatus.STACK_CELLS_UPDATED) {
+			drawableStackCells.clear();
+			for (int row : TetrisConstants.ROWS) {
+				for (int column : TetrisConstants.COLUMNS) {
+					final Optional<Color> colorOption = stackCells.get(row)
+							.get(column);
+					if (colorOption.isPresent()) {
+						drawableStackCells.put(
+								TetrisCoordinate.of(row, column),
+								colorOption.get());
+					}
+				}
+			}
+		}
 	}
 
 	private void publishTetrisModelEvent() {
