@@ -1,6 +1,6 @@
 package org.aaron.javafx.tetris;
 
-public enum StackCellsUpdatedStatus {
+enum StackCellsUpdatedStatus {
 
 	STACK_CELLS_UPDATED,
 

@@ -1,6 +1,5 @@
 package org.aaron.javafx.tetris;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -10,19 +9,17 @@ import javafx.scene.paint.Color;
 import org.aaron.javafx.tetris.pieces.RandomPieceFactory;
 import org.aaron.javafx.tetris.pieces.TetrisPiece;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
 
-public class TetrisModel {
+class TetrisModel {
 
 	private final CopyOnWriteArraySet<TetrisModelListener> listeners = new CopyOnWriteArraySet<>();
 
 	private final RandomPieceFactory randomPieceFactory = new RandomPieceFactory();
 
-	private final ArrayList<ArrayList<Optional<Color>>> stackCells = new ArrayList<>();
+	private final StackCells stackCells = new StackCells();
 
 	private final HashMap<TetrisCoordinate, Color> drawableStackCells = new HashMap<>();
 
@@ -55,8 +52,7 @@ public class TetrisModel {
 	}
 
 	public void reset() {
-		stackCells.clear();
-		stackCells.addAll(buildEmptyStackCellsColumnsList());
+		stackCells.reset();
 
 		drawableStackCells.clear();
 
@@ -209,8 +205,7 @@ public class TetrisModel {
 
 	private void addPieceToStack(TetrisPiece tetrisPiece) {
 		for (TetrisCoordinate tetrisCoordinate : tetrisPiece.getCoordinates()) {
-			stackCells.get(tetrisCoordinate.getRow()).set(
-					tetrisCoordinate.getColumn(),
+			stackCells.set(tetrisCoordinate,
 					Optional.of(tetrisPiece.getColor()));
 		}
 		handleFilledStackRows();
@@ -221,11 +216,8 @@ public class TetrisModel {
 		final Range<Integer> closedRowsRange = TetrisConstants.ROWS_SET.range();
 		int row = closedRowsRange.upperEndpoint();
 		while (row >= closedRowsRange.lowerEndpoint()) {
-			final boolean rowIsFull = (!stackCells.get(row).contains(
-					Optional.absent()));
-			if (rowIsFull) {
-				stackCells.remove(row);
-				stackCells.add(0, buildEmptyStackCellsRowList());
+			if (stackCells.rowIsFull(row)) {
+				stackCells.removeRow(row);
 				++numLines;
 			} else {
 				row -= 1;
@@ -238,8 +230,7 @@ public class TetrisModel {
 			if (!tetrisCoordinate.isValid()) {
 				return false;
 			}
-			if (stackCells.get(tetrisCoordinate.getRow())
-					.get(tetrisCoordinate.getColumn()).isPresent()) {
+			if (stackCells.get(tetrisCoordinate).isPresent()) {
 				return false;
 			}
 		}
@@ -273,15 +264,11 @@ public class TetrisModel {
 
 		if (stackCellsUpdatedStatus == StackCellsUpdatedStatus.STACK_CELLS_UPDATED) {
 			drawableStackCells.clear();
-			for (int row : TetrisConstants.ROWS_SET) {
-				for (int column : TetrisConstants.COLUMNS_SET) {
-					final Optional<Color> colorOption = stackCells.get(row)
-							.get(column);
-					if (colorOption.isPresent()) {
-						drawableStackCells.put(
-								TetrisCoordinate.of(row, column),
-								colorOption.get());
-					}
+			for (TetrisCoordinate tetrisCoordinate : TetrisCoordinates.ALL_VALID_TETRIS_COORDINATES) {
+				final Optional<Color> colorOption = stackCells
+						.get(tetrisCoordinate);
+				if (colorOption.isPresent()) {
+					drawableStackCells.put(tetrisCoordinate, colorOption.get());
 				}
 			}
 		}
@@ -299,24 +286,4 @@ public class TetrisModel {
 		}
 	}
 
-	private ArrayList<ArrayList<Optional<Color>>> buildEmptyStackCellsColumnsList() {
-		return new ArrayList<>(Collections2.transform(TetrisConstants.ROWS_SET,
-				new Function<Integer, ArrayList<Optional<Color>>>() {
-					@Override
-					public ArrayList<Optional<Color>> apply(Integer row) {
-						return buildEmptyStackCellsRowList();
-					}
-				}));
-	}
-
-	private ArrayList<Optional<Color>> buildEmptyStackCellsRowList() {
-		return new ArrayList<>(Collections2.transform(
-				TetrisConstants.COLUMNS_SET,
-				new Function<Integer, Optional<Color>>() {
-					@Override
-					public Optional<Color> apply(Integer column) {
-						return Optional.absent();
-					}
-				}));
-	}
 }

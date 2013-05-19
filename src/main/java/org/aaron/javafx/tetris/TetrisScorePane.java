@@ -8,7 +8,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class TetrisScorePane implements TetrisModelListener {
+class TetrisScorePane implements TetrisModelListener {
 
 	private final VBox vbox = new VBox();
 

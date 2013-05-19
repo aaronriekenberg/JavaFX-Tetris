@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.RectangleBuilder;
 
-public class TetrisPane implements TetrisModelListener {
+class TetrisPane implements TetrisModelListener {
 
 	private final HashMap<TetrisCoordinate, TetrisPaneCellPixelCoordinates> tetrisCoordinatesToPixelCoordinate = new HashMap<>();
 

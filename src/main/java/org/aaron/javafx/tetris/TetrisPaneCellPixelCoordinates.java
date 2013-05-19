@@ -1,6 +1,6 @@
 package org.aaron.javafx.tetris;
 
-public class TetrisPaneCellPixelCoordinates {
+class TetrisPaneCellPixelCoordinates {
 
 	private final int x;
 

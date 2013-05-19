@@ -1,6 +1,6 @@
 package org.aaron.javafx.tetris;
 
-public enum CurrentPieceUpdatedStatus {
+enum CurrentPieceUpdatedStatus {
 
 	CURRENT_PIECE_UPDATED,
 
