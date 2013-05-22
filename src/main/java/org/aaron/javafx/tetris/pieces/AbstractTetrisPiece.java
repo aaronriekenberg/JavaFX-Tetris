@@ -1,8 +1,14 @@
 package org.aaron.javafx.tetris.pieces;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.List;
+
 import javafx.scene.paint.Color;
 
 import org.aaron.javafx.tetris.TetrisCoordinate;
+
+import com.google.common.collect.ImmutableList;
 
 public abstract class AbstractTetrisPiece implements TetrisPiece {
 
@@ -12,11 +18,14 @@ public abstract class AbstractTetrisPiece implements TetrisPiece {
 
 	private final int orientation;
 
+	private final ImmutableList<TetrisCoordinate> coordinates;
+
 	public AbstractTetrisPiece(TetrisCoordinate centerCoordinate, Color color,
-			int orientation) {
-		this.centerCoordinate = centerCoordinate;
-		this.color = color;
+			int orientation, ImmutableList<TetrisCoordinate> coordinates) {
+		this.centerCoordinate = checkNotNull(centerCoordinate);
+		this.color = checkNotNull(color);
 		this.orientation = orientation;
+		this.coordinates = checkNotNull(coordinates);
 	}
 
 	@Override
@@ -42,6 +51,11 @@ public abstract class AbstractTetrisPiece implements TetrisPiece {
 	@Override
 	public int getOrientation() {
 		return orientation;
+	}
+
+	@Override
+	public List<TetrisCoordinate> getCoordinates() {
+		return coordinates;
 	}
 
 	@Override
