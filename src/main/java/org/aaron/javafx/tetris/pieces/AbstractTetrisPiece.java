@@ -10,7 +10,7 @@ import org.aaron.javafx.tetris.TetrisCoordinate;
 
 import com.google.common.collect.ImmutableList;
 
-public abstract class AbstractTetrisPiece implements TetrisPiece {
+abstract class AbstractTetrisPiece implements TetrisPiece {
 
 	private final TetrisCoordinate centerCoordinate;
 
